@@ -5,20 +5,18 @@ import { Link } from "react-router-dom";
 
 export const AddContact = () => {
   const { actions, store } = useContext(Context);
-  const navigate = useNavigate();
-
-  const [contactData, setContactData] = useState({
-    agenda_slug: "taylor-allen",
+  const [contact, setContact] = useState({
+    name: "",
+    email: "",
+    address: "",
+    phone: "",
   });
-
-  const handleChange = (e) => {
-    setContactData({ ...contactData, [e.target.name]: e.target.value });
-  };
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await actions.addContacts(contactData);
+      await actions.addContacts(contact);
       await actions.getContacts();
       navigate("/");
     } catch (error) {
@@ -33,10 +31,13 @@ export const AddContact = () => {
           <label>Full Name</label>
           <input
             type="text"
-            name="full_name"
-            onChange={(e) => {
-              handleChange(e);
-            }}
+            name="name"
+            onChange={(e) =>
+              setContact((prevContact) => ({
+                ...prevContact,
+                name: e.target.value,
+              }))
+            }
             required
           />
         </div>
@@ -45,9 +46,12 @@ export const AddContact = () => {
           <input
             type="email"
             name="email"
-            onChange={(e) => {
-              handleChange(e);
-            }}
+            onChange={(e) =>
+              setContact((prevContact) => ({
+                ...prevContact,
+                email: e.target.value,
+              }))
+            }
             required
           />
         </div>
@@ -56,9 +60,12 @@ export const AddContact = () => {
           <input
             type="text"
             name="address"
-            onChange={(e) => {
-              handleChange(e);
-            }}
+            onChange={(e) =>
+              setContact((prevContact) => ({
+                ...prevContact,
+                address: e.target.value,
+              }))
+            }
             required
           />
         </div>
@@ -67,16 +74,19 @@ export const AddContact = () => {
           <input
             type="tel"
             name="phone"
-            onChange={(e) => {
-              handleChange(e);
-            }}
+            onChange={(e) =>
+              setContact((prevContact) => ({
+                ...prevContact,
+                phone: e.target.value,
+              }))
+            }
             required
           />
         </div>
 
         {/* if contact.id doesn't exist, Add Contact button and vice versa*/}
         <button type="submit">
-          {contactData.id ? "Update Contact" : "Add Contact"}
+          {contact.id ? "Update Contact" : "Add Contact"}
         </button>
       </form>
     </div>

@@ -1,24 +1,12 @@
 const getState = ({ getStore, getActions, setStore }) => {
   return {
     store: {
-      demo: [
-        {
-          title: "FIRST",
-          background: "white",
-          initial: "white",
-        },
-        {
-          title: "SECOND",
-          background: "white",
-          initial: "white",
-        },
-      ],
       contacts: [],
     },
     actions: {
       getContacts: () => {
         fetch(
-          "https://playground.4geeks.com/apis/fake/contact/agenda/taylor-allen"
+          "https://playground.4geeks.com/contact/agendas/taylor-allen/contacts"
         )
           .then((resp) => {
             if (!resp.ok) throw Error(resp.statusText);
@@ -28,21 +16,31 @@ const getState = ({ getStore, getActions, setStore }) => {
             console.log(data);
 
             // Set the retrieved contacts data in the store
-            setStore({ contacts: data });
+            setStore({ contacts: data.contacts });
           })
           .catch((error) => {
             console.log(error);
           });
       },
 
-      addContacts: (contactData) => {
-        const url = "https://playground.4geeks.com/apis/fake/contact/";
+      addContacts: (contact) => {
+        const url =
+          "https://playground.4geeks.com/contact/agendas/taylor-allen/contacts";
+
+        // Prepare payload according to the expected schema
+        const contactPayload = {
+          name: contact.name,
+          phone: contact.phone,
+          email: contact.email,
+          address: contact.address,
+        };
+
         const request = {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(contactData),
+          body: JSON.stringify(contactPayload),
         };
 
         fetch(url, request)
@@ -51,16 +49,16 @@ const getState = ({ getStore, getActions, setStore }) => {
             return resp.json();
           })
           .then((data) => {
-            console.log(data);
-            getActions().getContacts();
+            console.log("Contact added:", data);
+            getActions().getContacts(); // Refresh contacts after adding
           })
           .catch((error) => {
-            console.log(error);
+            console.error("Error adding contact:", error);
           });
       },
 
       deleteContacts: (id) => {
-        const url = `https://playground.4geeks.com/apis/fake/contact/${id}`;
+        const url = `https://playground.4geeks.com/contact/agendas/taylor-allen/contacts/${id}`;
         const request = {
           method: "DELETE",
           headers: {
@@ -83,13 +81,16 @@ const getState = ({ getStore, getActions, setStore }) => {
       },
 
       editContact: (id, contactData) => {
-        fetch(`https://playground.4geeks.com/apis/fake/contact/${id}`, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(contactData),
-        })
+        fetch(
+          `https://playground.4geeks.com/contact/agendas/taylor-allen/contacts/${id}`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(contactData),
+          }
+        )
           .then((resp) => {
             if (!resp.ok) throw Error(resp.statusText);
             return resp.json();
